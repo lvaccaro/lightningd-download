@@ -323,6 +323,22 @@ impl Drop for LightningD {
     }
 }
 
+impl LightningD {
+    pub fn sync(&self) {
+        loop {
+            match self.client.getinfo() {
+                Ok(info) => {
+                    if info.warning_bitcoind_sync.is_none() && info.warning_lightningd_sync.is_none() {
+                        break
+                    }
+                }
+                Err(_) => {}
+            }
+            thread::sleep(Duration::from_millis(3000));
+        }
+    }
+}
+
 
 /// Provide the bitcoind executable path if a version feature has been specified
 #[cfg(not(feature = "download"))]
@@ -387,6 +403,7 @@ mod test {
     fn test_lightningd() {
         let exe = init();
         let lightningd = LightningD::new(exe).unwrap();
+        lightningd.sync();
         let info = lightningd.client.getinfo().unwrap();
         println!("{:?}", info);
     }
