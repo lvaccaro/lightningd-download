@@ -52,9 +52,9 @@ mod download {
     }
 */
     fn download_filename() -> String {
-        let version = ubuntu_version::Version::detect().unwrap();
+        let default = ubuntu_version::Version { major: 22, minor: 4, patch: 0 };
+        let version = ubuntu_version::Version::detect().unwrap_or(default);
         format!("clightning-{}-Ubuntu-{}.{:0>2}.tar.xz", &VERSION, version.major, version.minor)
-        //format!("clightning-{}-Ubuntu-{}.{:0>2}.tar.xz", &VERSION, "22", "4")
     }
     fn get_expected_sha256(filename: &str) -> anyhow::Result<sha256::Hash> {
         println!("{}",filename);
